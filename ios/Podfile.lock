@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - sinnts_player (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - sinnts_player (from `.symlinks/plugins/sinnts_player/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  sinnts_player:
+    :path: ".symlinks/plugins/sinnts_player/ios"
+
+SPEC CHECKSUMS:
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  sinnts_player: 04a900a80983c9a5ca9e9b5dd64e1f750999eefe
+
+PODFILE CHECKSUM: 3c63482e143d1b91d2d2560aee9fb04ecc74ac7e
+
+COCOAPODS: 1.16.2
