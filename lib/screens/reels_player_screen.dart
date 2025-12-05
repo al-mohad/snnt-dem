@@ -15,62 +15,57 @@ class _ReelsPlayerScreenState extends State<ReelsPlayerScreen> {
   final Map<int, bool> _isPlayingMap = {};
   int _currentIndex = 0;
 
-  static const List<ReelItem> reels = [
-    ReelItem(
-      id: 0,
-      title: 'Big Buck Bunny',
+  // Sample HLS video data (like Instagram/TikTok posts)
+  static const List<VideoPost> _videos = [
+    VideoPost(
+      id: '648f3d959110',
       url:
-          'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-      description: 'Amazing animated short film',
-      duration: '9:56',
+          'https://files.sinnts.com/posts/hls/b38e8f52-5d65-4890-ab9b-648f3d959110.m3u8',
     ),
-    ReelItem(
-      id: 1,
-      title: 'Elephants Dream',
+    VideoPost(
+      id: '610afded7a30',
       url:
-          'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-      description: 'Surreal journey through dreams',
-      duration: '10:48',
+          'https://files.sinnts.com/posts/hls/2bdc7d22-1286-4342-9aba-610afded7a30.m3u8',
     ),
-    ReelItem(
-      id: 2,
-      title: 'For Bigger Blazes',
+    VideoPost(
+      id: 'ff1204647131',
       url:
-          'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-      description: 'Action-packed sequences',
-      duration: '15:40',
+          'https://files.sinnts.com/posts/hls/4dfc3918-2f61-4a0c-a032-ff1204647131.m3u8',
     ),
-    ReelItem(
-      id: 3,
-      title: 'For Bigger Escapes',
+    VideoPost(
+      id: '43208cb8ef4e',
       url:
-          'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-      description: 'Adventure exploration',
-      duration: '15:36',
+          'https://files.sinnts.com/posts/hls/654ae729-6358-4bb4-bdd1-43208cb8ef4e.m3u8',
     ),
-    ReelItem(
-      id: 4,
-      title: 'For Bigger Fun',
+    VideoPost(
+      id: '55f4fa93929f',
       url:
-          'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-      description: 'Comedy gold',
-      duration: '15:40',
+          'https://files.sinnts.com/posts/hls/71a96aa8-371c-451b-a21e-55f4fa93929f.m3u8',
     ),
-    ReelItem(
-      id: 5,
-      title: 'Sintel',
+    VideoPost(
+      id: 'c2f4e037b6fd',
       url:
-          'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-      description: 'Fantasy epic tale',
-      duration: '14:48',
+          'https://files.sinnts.com/posts/hls/b25468c9-2dbd-4a78-a931-c2f4e037b6fd.m3u8',
     ),
-    ReelItem(
-      id: 6,
-      title: 'Tears of Steel',
+    VideoPost(
+      id: '5e4ab12873a3',
       url:
-          'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
-      description: 'Sci-fi thriller',
-      duration: '12:14',
+          'https://files.sinnts.com/posts/hls/9c6c3a4f-7ed8-410d-a0d0-5e4ab12873a3.m3u8',
+    ),
+    VideoPost(
+      id: 'eb4038246cc7',
+      url:
+          'https://files.sinnts.com/posts/hls/dbe3bf14-e6c4-47ba-8add-eb4038246cc7.m3u8',
+    ),
+    VideoPost(
+      id: 'e6d207474aa3',
+      url:
+          'https://files.sinnts.com/posts/hls/1ff5dbbf-c1d5-4fbb-8b9e-e6d207474aa3.m3u8',
+    ),
+    VideoPost(
+      id: '7ec98306088a',
+      url:
+          'https://files.sinnts.com/posts/hls/64e185b5-169c-4e6e-84c1-7ec98306088a.m3u8',
     ),
   ];
 
@@ -112,15 +107,15 @@ class _ReelsPlayerScreenState extends State<ReelsPlayerScreen> {
     }
     try {
       final playerId = await _player.createPlayer();
-      final reel = reels[index];
+      final video = _videos[index];
       setState(() {
         _playerIds[index] = playerId;
         _isPlayingMap[index] = false;
       });
-      await _player.setDataSource(playerId, reel.url);
+      await _player.setDataSource(playerId, video.url);
       await _player.prefetchMedia(
-        url: reel.url,
-        cacheKey: 'reel_${reel.id}',
+        url: video.url,
+        cacheKey: 'video_${video.id}',
         durationSeconds: 10.0,
       );
       await _player.play(playerId);
@@ -167,7 +162,7 @@ class _ReelsPlayerScreenState extends State<ReelsPlayerScreen> {
     final indicesToKeep = {
       currentIndex,
       if (currentIndex > 0) currentIndex - 1,
-      if (currentIndex < reels.length - 1) currentIndex + 1,
+      if (currentIndex < _videos.length - 1) currentIndex + 1,
     };
     for (final index
         in _playerIds.keys.where((i) => !indicesToKeep.contains(i)).toList()) {
@@ -186,7 +181,7 @@ class _ReelsPlayerScreenState extends State<ReelsPlayerScreen> {
       body: PageView.builder(
         controller: _pageController,
         scrollDirection: Axis.vertical,
-        itemCount: reels.length,
+        itemCount: _videos.length,
         onPageChanged: (index) => _onPageChanged(index),
         itemBuilder: (context, index) => _buildReelPage(index),
       ),
@@ -206,7 +201,7 @@ class _ReelsPlayerScreenState extends State<ReelsPlayerScreen> {
     await _createPlayerForReel(index);
 
     // Prefetch next reel (but don't play it)
-    if (index + 1 < reels.length) {
+    if (index + 1 < _videos.length) {
       _prefetchReel(index + 1);
     }
 
@@ -218,25 +213,25 @@ class _ReelsPlayerScreenState extends State<ReelsPlayerScreen> {
     if (_playerIds.containsKey(index)) return;
     try {
       final playerId = await _player.createPlayer();
-      final reel = reels[index];
+      final video = _videos[index];
       setState(() {
         _playerIds[index] = playerId;
         _isPlayingMap[index] = false;
       });
-      await _player.setDataSource(playerId, reel.url);
+      await _player.setDataSource(playerId, video.url);
       await _player.prefetchMedia(
-        url: reel.url,
-        cacheKey: 'reel_${reel.id}',
+        url: video.url,
+        cacheKey: 'video_${video.id}',
         durationSeconds: 10.0,
       );
       // Don't auto-play - just prefetch
     } catch (e) {
-      debugPrint('Error prefetching reel $index: $e');
+      debugPrint('Error prefetching video $index: $e');
     }
   }
 
   Widget _buildReelPage(int index) {
-    final reel = reels[index];
+    final video = _videos[index];
     final playerId = _playerIds[index];
     final isPlaying = _isPlayingMap[index] ?? false;
     return Stack(
@@ -255,14 +250,14 @@ class _ReelsPlayerScreenState extends State<ReelsPlayerScreen> {
               child: CircularProgressIndicator(color: Colors.white),
             ),
           ),
-        _buildOverlay(index, reel, playerId, isPlaying),
+        _buildOverlay(index, video, playerId, isPlaying),
       ],
     );
   }
 
   Widget _buildOverlay(
     int index,
-    ReelItem reel,
+    VideoPost video,
     String? playerId,
     bool isPlaying,
   ) {
@@ -282,22 +277,22 @@ class _ReelsPlayerScreenState extends State<ReelsPlayerScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildTopBar(index, reel),
-            _buildBottomContent(index, reel, playerId, isPlaying),
+            _buildTopBar(index),
+            _buildBottomContent(index, video, playerId, isPlaying),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTopBar(int index, ReelItem reel) {
+  Widget _buildTopBar(int index) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Reel ${index + 1}/${reels.length}',
+            'Video ${index + 1}/${_videos.length}',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 14,
@@ -310,10 +305,7 @@ class _ReelsPlayerScreenState extends State<ReelsPlayerScreen> {
               color: Colors.black54,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Text(
-              reel.duration,
-              style: const TextStyle(color: Colors.white, fontSize: 12),
-            ),
+            child: const Icon(Icons.hd, color: Colors.white, size: 18),
           ),
         ],
       ),
@@ -322,7 +314,7 @@ class _ReelsPlayerScreenState extends State<ReelsPlayerScreen> {
 
   Widget _buildBottomContent(
     int index,
-    ReelItem reel,
+    VideoPost video,
     String? playerId,
     bool isPlaying,
   ) {
@@ -333,7 +325,7 @@ class _ReelsPlayerScreenState extends State<ReelsPlayerScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            reel.title,
+            'Video #${video.id.substring(0, 8)}',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -342,7 +334,7 @@ class _ReelsPlayerScreenState extends State<ReelsPlayerScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            reel.description,
+            'HLS Streaming • Tap to control',
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.8),
               fontSize: 14,
@@ -410,17 +402,9 @@ class _ReelsPlayerScreenState extends State<ReelsPlayerScreen> {
   }
 }
 
-class ReelItem {
-  final int id;
-  final String title;
+class VideoPost {
+  final String id;
   final String url;
-  final String description;
-  final String duration;
-  const ReelItem({
-    required this.id,
-    required this.title,
-    required this.url,
-    required this.description,
-    required this.duration,
-  });
+
+  const VideoPost({required this.id, required this.url});
 }
